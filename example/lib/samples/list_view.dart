@@ -14,8 +14,7 @@ class ListViewScreen extends StatefulWidget {
 }
 
 class _ListViewScreenState extends State<ListViewScreen> {
-  final PagingController<int, Photo> _pagingController =
-      PagingController(firstPageKey: 1);
+  final PagingController<int, Photo> _pagingController = PagingController(firstPageKey: 1);
 
   String? _searchTerm;
 
@@ -84,10 +83,9 @@ class _ListViewScreenState extends State<ListViewScreen> {
               itemBuilder: (context, item, index) => ImageListTile(
                 item: item,
               ),
-              firstPageErrorIndicatorBuilder: (context) =>
-                  CustomFirstPageError(pagingController: _pagingController),
-              newPageErrorIndicatorBuilder: (context) =>
-                  CustomNewPageError(pagingController: _pagingController),
+              firstPageErrorIndicatorBuilder: (context, error) =>
+                  CustomFirstPageError(pagingController: _pagingController, error: error),
+              newPageErrorIndicatorBuilder: (context, error) => CustomNewPageError(pagingController: _pagingController),
             ),
             separatorBuilder: (context, index) => const Divider(),
           ),

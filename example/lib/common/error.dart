@@ -4,9 +4,10 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 class CustomFirstPageError extends StatelessWidget {
   const CustomFirstPageError({
     super.key,
+    this.error,
     required this.pagingController,
   });
-
+  final dynamic error;
   final PagingController<Object, Object> pagingController;
 
   @override
@@ -20,12 +21,12 @@ class CustomFirstPageError extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleLarge,
           ),
-          if (pagingController.error != null) ...[
+          if (error != null) ...[
             const SizedBox(
               height: 16,
             ),
             Text(
-              pagingController.error.toString(),
+              error.toString(),
               textAlign: TextAlign.center,
             ),
           ],
