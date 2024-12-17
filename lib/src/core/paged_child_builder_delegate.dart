@@ -6,6 +6,11 @@ typedef ItemWidgetBuilder<ItemType> = Widget Function(
   int index,
 );
 
+typedef PagedErrorWidgetBuilder = Widget Function(
+  BuildContext context,
+  dynamic error,
+);
+
 /// Supplies builders for the visual components of paged views.
 ///
 /// The generic type [ItemType] must be specified in order to properly identify
@@ -27,10 +32,10 @@ class PagedChildBuilderDelegate<ItemType> {
   final ItemWidgetBuilder<ItemType> itemBuilder;
 
   /// The builder for the first page's error indicator.
-  final WidgetBuilder? firstPageErrorIndicatorBuilder;
+  final PagedErrorWidgetBuilder? firstPageErrorIndicatorBuilder;
 
   /// The builder for a new page's error indicator.
-  final WidgetBuilder? newPageErrorIndicatorBuilder;
+  final PagedErrorWidgetBuilder? newPageErrorIndicatorBuilder;
 
   /// The builder for the first page's progress indicator.
   final WidgetBuilder? firstPageProgressIndicatorBuilder;

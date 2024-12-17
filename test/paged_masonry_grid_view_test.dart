@@ -31,13 +31,10 @@ void main() {
       verify(mockPageRequestListener(1)).called(1);
     });
 
-    testWidgets(
-        'Requests second page immediately if the first page isn\'t enough',
-        (tester) async {
+    testWidgets('Requests second page immediately if the first page isn\'t enough', (tester) async {
       tester.applyPreferredTestScreenSize();
 
-      final controllerLoadedWithFirstPage =
-          buildPagingControllerWithPopulatedState(
+      final controllerLoadedWithFirstPage = buildPagingControllerWithPopulatedState(
         PopulatedStateOption.ongoingWithOnePage,
       );
 
@@ -93,8 +90,7 @@ void main() {
     });
 
     group('Displays indicators as grid children', () {
-      testWidgets('Appends the new page progress indicator to the grid items',
-          (tester) async {
+      testWidgets('Appends the new page progress indicator to the grid items', (tester) async {
         tester.applyPreferredTestScreenSize();
 
         final pagingController = buildPagingControllerWithPopulatedState(
@@ -124,8 +120,7 @@ void main() {
         );
       });
 
-      testWidgets('Appends the new page error indicator to the grid items',
-          (tester) async {
+      testWidgets('Appends the new page error indicator to the grid items', (tester) async {
         tester.applyPreferredTestScreenSize();
 
         final pagingController = buildPagingControllerWithPopulatedState(
@@ -133,10 +128,10 @@ void main() {
         );
 
         final customIndicatorKey = UniqueKey();
-        final customNewPageErrorIndicator = Text(
-          'Error',
-          key: customIndicatorKey,
-        );
+        customNewPageErrorIndicator(BuildContext context, dynamic error) => Text(
+              error.toString(),
+              key: customIndicatorKey,
+            );
 
         await _pumpPagedStaggeredGridView(
           tester: tester,
@@ -156,8 +151,7 @@ void main() {
         );
       });
 
-      testWidgets('Appends the no more items indicator to the grid items',
-          (tester) async {
+      testWidgets('Appends the no more items indicator to the grid items', (tester) async {
         tester.applyPreferredTestScreenSize();
 
         final pagingController = buildPagingControllerWithPopulatedState(
@@ -200,7 +194,7 @@ Future<void> _pumpPagedStaggeredGridView({
   required PagingController<int, String> pagingController,
   int crossAxisCount = 2,
   Widget? newPageProgressIndicator,
-  Widget? newPageErrorIndicator,
+  Widget Function(BuildContext context, dynamic error)? newPageErrorIndicator,
   Widget? noMoreItemsIndicator,
 }) =>
     tester.pumpWidget(
@@ -210,15 +204,11 @@ Future<void> _pumpPagedStaggeredGridView({
             pagingController: pagingController,
             builderDelegate: PagedChildBuilderDelegate<String>(
               itemBuilder: _buildItem,
-              newPageProgressIndicatorBuilder: newPageProgressIndicator != null
-                  ? (context) => newPageProgressIndicator
-                  : null,
-              newPageErrorIndicatorBuilder: newPageErrorIndicator != null
-                  ? (context) => newPageErrorIndicator
-                  : null,
-              noMoreItemsIndicatorBuilder: noMoreItemsIndicator != null
-                  ? (context) => noMoreItemsIndicator
-                  : null,
+              newPageProgressIndicatorBuilder:
+                  newPageProgressIndicator != null ? (context) => newPageProgressIndicator : null,
+              newPageErrorIndicatorBuilder:
+                  newPageErrorIndicator != null ? (context, error) => newPageErrorIndicator(context, error) : null,
+              noMoreItemsIndicatorBuilder: noMoreItemsIndicator != null ? (context) => noMoreItemsIndicator : null,
             ),
             crossAxisCount: 2,
           ),

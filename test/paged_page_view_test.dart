@@ -79,10 +79,13 @@ void main() {
       );
 
       final customIndicatorKey = UniqueKey();
-      final customNewPageErrorIndicator = Text(
-        'Error',
-        key: customIndicatorKey,
-      );
+
+      customNewPageErrorIndicator(BuildContext context, dynamic error) {
+        return Container(
+          key: customIndicatorKey,
+          color: Colors.red,
+        );
+      }
 
       await _pumpPagedPageView(
         tester: tester,
@@ -108,7 +111,7 @@ Future<void> _pumpPagedPageView({
   required WidgetTester tester,
   required PagingController<int, String> pagingController,
   Widget? newPageProgressIndicator,
-  Widget? newPageErrorIndicator,
+  Widget Function(BuildContext context, dynamic error)? newPageErrorIndicator,
   Widget? noMoreItemsIndicator,
 }) =>
     tester.pumpWidget(
@@ -119,15 +122,11 @@ Future<void> _pumpPagedPageView({
             scrollDirection: Axis.vertical,
             builderDelegate: PagedChildBuilderDelegate<String>(
               itemBuilder: _buildItem,
-              newPageProgressIndicatorBuilder: newPageProgressIndicator != null
-                  ? (context) => newPageProgressIndicator
-                  : null,
-              newPageErrorIndicatorBuilder: newPageErrorIndicator != null
-                  ? (context) => newPageErrorIndicator
-                  : null,
-              noMoreItemsIndicatorBuilder: noMoreItemsIndicator != null
-                  ? (context) => noMoreItemsIndicator
-                  : null,
+              newPageProgressIndicatorBuilder:
+                  newPageProgressIndicator != null ? (context) => newPageProgressIndicator : null,
+              newPageErrorIndicatorBuilder:
+                  newPageErrorIndicator != null ? (context, error) => newPageErrorIndicator(context, error) : null,
+              noMoreItemsIndicatorBuilder: noMoreItemsIndicator != null ? (context) => noMoreItemsIndicator : null,
             ),
           ),
         ),

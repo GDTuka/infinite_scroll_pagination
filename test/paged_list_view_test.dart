@@ -33,11 +33,8 @@ void main() {
       verify(mockPageRequestListener(1)).called(1);
     });
 
-    testWidgets(
-        'Requests second page immediately if the first page isn\'t enough',
-        (tester) async {
-      final controllerLoadedWithFirstPage =
-          buildPagingControllerWithPopulatedState(
+    testWidgets('Requests second page immediately if the first page isn\'t enough', (tester) async {
+      final controllerLoadedWithFirstPage = buildPagingControllerWithPopulatedState(
         PopulatedStateOption.ongoingWithOnePage,
       );
 
@@ -93,11 +90,8 @@ void main() {
     });
   });
 
-  testWidgets(
-      'Inserts separators between items if a [separatorBuilder] is specified',
-      (tester) async {
-    final controllerLoadedWithFirstPage =
-        buildPagingControllerWithPopulatedState(
+  testWidgets('Inserts separators between items if a [separatorBuilder] is specified', (tester) async {
+    final controllerLoadedWithFirstPage = buildPagingControllerWithPopulatedState(
       PopulatedStateOption.ongoingWithOnePage,
     );
     tester.applyPreferredTestScreenSize();
@@ -115,8 +109,7 @@ void main() {
   });
 
   group('Appends indicators to the item list', () {
-    testWidgets('Appends the new page progress indicator to the list items',
-        (tester) async {
+    testWidgets('Appends the new page progress indicator to the list items', (tester) async {
       tester.applyPreferredTestScreenSize();
 
       final pagingController = buildPagingControllerWithPopulatedState(
@@ -145,19 +138,18 @@ void main() {
       );
     });
 
-    testWidgets('Appends the new page error indicator to the list items',
-        (tester) async {
+    testWidgets('Appends the new page error indicator to the list items', (tester) async {
       tester.applyPreferredTestScreenSize();
 
-      final pagingController = buildPagingControllerWithPopulatedState(
-        PopulatedStateOption.errorOnSecondPage,
-      );
+        final pagingController = buildPagingControllerWithPopulatedState(
+          PopulatedStateOption.errorOnSecondPage,
+        );
 
-      final customIndicatorKey = UniqueKey();
-      final customNewPageErrorIndicator = Text(
-        'Error',
-        key: customIndicatorKey,
-      );
+        final customIndicatorKey = UniqueKey();
+        customNewPageErrorIndicator(BuildContext context, dynamic error) => Text(
+              error.toString(),
+              key: customIndicatorKey,
+            );
 
       await _pumpPagedListView(
         tester: tester,
@@ -176,8 +168,7 @@ void main() {
       );
     });
 
-    testWidgets('Appends the no more items indicator to the list items',
-        (tester) async {
+    testWidgets('Appends the no more items indicator to the list items', (tester) async {
       tester.applyPreferredTestScreenSize();
 
       final pagingController = buildPagingControllerWithPopulatedState(
@@ -218,7 +209,7 @@ Future<void> _pumpPagedListView({
   required PagingController<int, String> pagingController,
   IndexedWidgetBuilder? separatorBuilder,
   Widget? newPageProgressIndicator,
-  Widget? newPageErrorIndicator,
+  Widget Function(BuildContext context, dynamic error)? newPageErrorIndicator,
   Widget? noMoreItemsIndicator,
 }) =>
     tester.pumpWidget(
@@ -230,15 +221,11 @@ Future<void> _pumpPagedListView({
                   builderDelegate: PagedChildBuilderDelegate<String>(
                     itemBuilder: _buildItem,
                     newPageProgressIndicatorBuilder:
-                        newPageProgressIndicator != null
-                            ? (context) => newPageProgressIndicator
-                            : null,
-                    newPageErrorIndicatorBuilder: newPageErrorIndicator != null
-                        ? (context) => newPageErrorIndicator
-                        : null,
-                    noMoreItemsIndicatorBuilder: noMoreItemsIndicator != null
-                        ? (context) => noMoreItemsIndicator
-                        : null,
+                        newPageProgressIndicator != null ? (context) => newPageProgressIndicator : null,
+                    newPageErrorIndicatorBuilder:
+                        newPageErrorIndicator != null ? (context, error) => newPageErrorIndicator(context, error) : null,
+                    noMoreItemsIndicatorBuilder:
+                        noMoreItemsIndicator != null ? (context) => noMoreItemsIndicator : null,
                   ),
                 )
               : PagedListView.separated(
@@ -246,15 +233,11 @@ Future<void> _pumpPagedListView({
                   builderDelegate: PagedChildBuilderDelegate<String>(
                     itemBuilder: _buildItem,
                     newPageProgressIndicatorBuilder:
-                        newPageProgressIndicator != null
-                            ? (context) => newPageProgressIndicator
-                            : null,
-                    newPageErrorIndicatorBuilder: newPageErrorIndicator != null
-                        ? (context) => newPageErrorIndicator
-                        : null,
-                    noMoreItemsIndicatorBuilder: noMoreItemsIndicator != null
-                        ? (context) => noMoreItemsIndicator
-                        : null,
+                        newPageProgressIndicator != null ? (context) => newPageProgressIndicator : null,
+                    newPageErrorIndicatorBuilder:
+                        newPageErrorIndicator != null ? (context, error) => newPageErrorIndicator(context, error) : null,
+                    noMoreItemsIndicatorBuilder:
+                        noMoreItemsIndicator != null ? (context) => noMoreItemsIndicator : null,
                   ),
                   separatorBuilder: separatorBuilder,
                 ),

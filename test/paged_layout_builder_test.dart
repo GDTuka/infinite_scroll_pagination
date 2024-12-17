@@ -35,9 +35,7 @@ void main() {
       _expectOneWidgetOfType(FirstPageProgressIndicator);
     });
 
-    testWidgets(
-        'Uses the custom first page progress indicator when one is provided.',
-        (tester) async {
+    testWidgets('Uses the custom first page progress indicator when one is provided.', (tester) async {
       // given
       final customIndicatorKey = UniqueKey();
       final builderDelegate = PagedChildBuilderDelegate<int>(
@@ -87,14 +85,12 @@ void main() {
       _expectOneWidgetOfType(FirstPageErrorIndicator);
     });
 
-    testWidgets(
-        'Uses the custom first page error indicator when one is provided.',
-        (tester) async {
+    testWidgets('Uses the custom first page error indicator when one is provided.', (tester) async {
       // given
       final customIndicatorKey = UniqueKey();
       final builderDelegate = PagedChildBuilderDelegate<int>(
         itemBuilder: (_, __, ___) => Container(),
-        firstPageErrorIndicatorBuilder: (context) => Container(
+        firstPageErrorIndicatorBuilder: (context, error) => Container(
           key: customIndicatorKey,
         ),
       );
@@ -138,9 +134,7 @@ void main() {
       _expectOneWidgetOfType(NoItemsFoundIndicator);
     });
 
-    testWidgets(
-        'Uses the custom no items found indicator when one is provided.',
-        (tester) async {
+    testWidgets('Uses the custom no items found indicator when one is provided.', (tester) async {
       // given
       final customIndicatorKey = UniqueKey();
       final builderDelegate = PagedChildBuilderDelegate<int>(
@@ -191,15 +185,14 @@ void main() {
       _expectOneWidgetOfType(NewPageErrorIndicator);
     });
 
-    testWidgets(
-        'Uses the custom new page error indicator when one is provided.',
-        (tester) async {
+    testWidgets('Uses the custom new page error indicator when one is provided.', (tester) async {
       // given
       final customIndicatorKey = UniqueKey();
+      pagingController.error = 'Error';
       final builderDelegate = PagedChildBuilderDelegate<int>(
         itemBuilder: (_, __, ___) => Container(),
-        newPageErrorIndicatorBuilder: (context) => Text(
-          'Error',
+        newPageErrorIndicatorBuilder: (context, error) => Text(
+          error,
           key: customIndicatorKey,
         ),
       );
@@ -247,9 +240,7 @@ void main() {
       _expectOneWidgetOfType(NewPageProgressIndicator);
     });
 
-    testWidgets(
-        'Uses the custom new page progress indicator when one is provided.',
-        (tester) async {
+    testWidgets('Uses the custom new page progress indicator when one is provided.', (tester) async {
       // given
       final customIndicatorKey = UniqueKey();
       final builderDelegate = PagedChildBuilderDelegate<int>(
@@ -281,8 +272,7 @@ void main() {
       );
     });
 
-    testWidgets('Uses the custom no more items indicator when one is provided.',
-        (tester) async {
+    testWidgets('Uses the custom no more items indicator when one is provided.', (tester) async {
       // given
       final customIndicatorKey = UniqueKey();
       final builderDelegate = PagedChildBuilderDelegate<int>(

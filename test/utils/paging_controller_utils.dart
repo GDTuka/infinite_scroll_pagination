@@ -30,7 +30,7 @@ PagingState<int, String> buildPagingStateWithPopulatedState(
       return PagingState(
         nextPageKey: 2,
         itemList: firstPageItemList,
-        error: Error(),
+        error: Exception("Error"),
       );
     case PopulatedStateOption.ongoingWithOnePage:
       return const PagingState(
@@ -44,7 +44,7 @@ PagingState<int, String> buildPagingStateWithPopulatedState(
       );
     case PopulatedStateOption.errorOnFirstPage:
       return PagingState(
-        error: Error(),
+        error: Exception("Error"),
       );
     case PopulatedStateOption.noItemsFound:
       return const PagingState(

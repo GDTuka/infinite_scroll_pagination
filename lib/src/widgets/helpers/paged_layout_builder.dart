@@ -94,52 +94,42 @@ class PagedLayoutBuilder<PageKeyType, ItemType> extends StatefulWidget {
   final PagedLayoutProtocol layoutProtocol;
 
   @override
-  State<PagedLayoutBuilder<PageKeyType, ItemType>> createState() =>
-      _PagedLayoutBuilderState<PageKeyType, ItemType>();
+  State<PagedLayoutBuilder<PageKeyType, ItemType>> createState() => _PagedLayoutBuilderState<PageKeyType, ItemType>();
 }
 
-class _PagedLayoutBuilderState<PageKeyType, ItemType>
-    extends State<PagedLayoutBuilder<PageKeyType, ItemType>> {
-  PagingController<PageKeyType, ItemType> get _pagingController =>
-      widget.pagingController;
+class _PagedLayoutBuilderState<PageKeyType, ItemType> extends State<PagedLayoutBuilder<PageKeyType, ItemType>> {
+  PagingController<PageKeyType, ItemType> get _pagingController => widget.pagingController;
 
-  PagedChildBuilderDelegate<ItemType> get _builderDelegate =>
-      widget.builderDelegate;
+  PagedChildBuilderDelegate<ItemType> get _builderDelegate => widget.builderDelegate;
 
-  bool get _shrinkWrapFirstPageIndicators =>
-      widget.shrinkWrapFirstPageIndicators;
+  bool get _shrinkWrapFirstPageIndicators => widget.shrinkWrapFirstPageIndicators;
 
   PagedLayoutProtocol get _layoutProtocol => widget.layoutProtocol;
 
-  WidgetBuilder get _firstPageErrorIndicatorBuilder =>
+  PagedErrorWidgetBuilder get _firstPageErrorIndicatorBuilder =>
       _builderDelegate.firstPageErrorIndicatorBuilder ??
-      (_) => FirstPageErrorIndicator(
+      (_, error) => FirstPageErrorIndicator(
             onTryAgain: _pagingController.retryLastFailedRequest,
           );
 
-  WidgetBuilder get _newPageErrorIndicatorBuilder =>
+  PagedErrorWidgetBuilder get _newPageErrorIndicatorBuilder =>
       _builderDelegate.newPageErrorIndicatorBuilder ??
-      (_) => NewPageErrorIndicator(
+      (_, error) => NewPageErrorIndicator(
             onTap: _pagingController.retryLastFailedRequest,
           );
 
   WidgetBuilder get _firstPageProgressIndicatorBuilder =>
-      _builderDelegate.firstPageProgressIndicatorBuilder ??
-      (_) => const FirstPageProgressIndicator();
+      _builderDelegate.firstPageProgressIndicatorBuilder ?? (_) => const FirstPageProgressIndicator();
 
   WidgetBuilder get _newPageProgressIndicatorBuilder =>
-      _builderDelegate.newPageProgressIndicatorBuilder ??
-      (_) => const NewPageProgressIndicator();
+      _builderDelegate.newPageProgressIndicatorBuilder ?? (_) => const NewPageProgressIndicator();
 
   WidgetBuilder get _noItemsFoundIndicatorBuilder =>
-      _builderDelegate.noItemsFoundIndicatorBuilder ??
-      (_) => const NoItemsFoundIndicator();
+      _builderDelegate.noItemsFoundIndicatorBuilder ?? (_) => const NoItemsFoundIndicator();
 
-  WidgetBuilder? get _noMoreItemsIndicatorBuilder =>
-      _builderDelegate.noMoreItemsIndicatorBuilder;
+  WidgetBuilder? get _noMoreItemsIndicatorBuilder => _builderDelegate.noMoreItemsIndicatorBuilder;
 
-  int get _invisibleItemsThreshold =>
-      _pagingController.invisibleItemsThreshold ?? 3;
+  int get _invisibleItemsThreshold => _pagingController.invisibleItemsThreshold ?? 3;
 
   int get _itemCount => _pagingController.itemCount;
 
@@ -216,7 +206,7 @@ class _PagedLayoutBuilderState<PageKeyType, ItemType>
                     itemList!,
                   ),
                   _itemCount,
-                  (context) => _newPageErrorIndicatorBuilder(context),
+                  (context) => _newPageErrorIndicatorBuilder(context, widget.pagingController.error),
                 );
                 break;
               case PagingStatus.noItemsFound:
@@ -227,7 +217,8 @@ class _PagedLayoutBuilderState<PageKeyType, ItemType>
                 );
                 break;
               default:
-                child = _FirstPageStatusIndicatorBuilder(
+                child = _FirstPageErrorIndicatorBuilder(
+                  error: widget.pagingController.error,
                   builder: _firstPageErrorIndicatorBuilder,
                   shrinkWrap: _shrinkWrapFirstPageIndicators,
                   layoutProtocol: _layoutProtocol,
@@ -261,8 +252,7 @@ class _PagedLayoutBuilderState<PageKeyType, ItemType>
     List<ItemType> itemList,
   ) {
     if (!_hasRequestedNextPage) {
-      final newPageRequestTriggerIndex =
-          max(0, _itemCount - _invisibleItemsThreshold);
+      final newPageRequestTriggerIndex = max(0, _itemCount - _invisibleItemsThreshold);
 
       final isBuildingTriggerIndexItem = index == newPageRequestTriggerIndex;
 
@@ -319,6 +309,45 @@ class _FirstPageStatusIndicatorBuilder extends StatelessWidget {
       } else {
         return Center(
           child: builder(context),
+        );
+      }
+    }
+  }
+}
+
+class _FirstPageErrorIndicatorBuilder extends StatelessWidget {
+  const _FirstPageErrorIndicatorBuilder({
+    required this.builder,
+    required this.layoutProtocol,
+    required this.error,
+    this.shrinkWrap = false,
+    Key? key,
+  }) : super(key: key);
+
+  final dynamic error;
+  final PagedErrorWidgetBuilder builder;
+  final bool shrinkWrap;
+  final PagedLayoutProtocol layoutProtocol;
+
+  @override
+  Widget build(BuildContext context) {
+    if (layoutProtocol == PagedLayoutProtocol.sliver) {
+      if (shrinkWrap) {
+        return SliverToBoxAdapter(
+          child: builder(context, error),
+        );
+      } else {
+        return SliverFillRemaining(
+          hasScrollBody: false,
+          child: builder(context, error),
+        );
+      }
+    } else {
+      if (shrinkWrap) {
+        return builder(context, error);
+      } else {
+        return Center(
+          child: builder(context, error),
         );
       }
     }
